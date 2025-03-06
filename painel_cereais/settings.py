@@ -148,7 +148,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Permitir requisições do React
+    "http://localhost:3000",  # Permitir chamadas do frontend local
+    "https://painel-backend-production.up.railway.app",  # Permitir chamadas do próprio backend
 ]
 
 INSTALLED_APPS += ["corsheaders"]
@@ -167,6 +168,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
     "https://painel-backend-production.up.railway.app",
 ]
 
