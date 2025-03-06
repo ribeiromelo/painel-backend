@@ -148,9 +148,14 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Permitir chamadas do frontend local
-    "https://painel-backend-production.up.railway.app",  # Permitir chamadas do próprio backend
+    "https://painel-frontend.vercel.app",  # Permitir chamadas do frontend no Vercel
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://painel-frontend.vercel.app",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS += ["corsheaders"]
 
@@ -166,11 +171,3 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "https://painel-backend-production.up.railway.app",
-]
-
-
-CORS_ALLOW_CREDENTIALS = True
