@@ -1,15 +1,15 @@
+from django.contrib.auth import authenticate, get_user_model
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, serializers, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth import authenticate
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 User = get_user_model()
 
-# Serializador para registrar usuários
+# 🔹 Serializador para Registrar Usuários
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-# Serializador para login
+# 🔹 Serializador para Login
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -35,25 +35,26 @@ class LoginSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
         }
 
-# View para registro de usuário
+# 🔹 Endpoint para Registro de Usuários (Público)
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]  # ✅ Permite qualquer pessoa criar conta
 
-# View para login
+# 🔹 Endpoint para Login (Público)
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny]  # ✅ Permite qualquer pessoa logar
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
-from rest_framework import status
-
+# 🔹 Customização do Token JWT (Público)
 class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]  # ✅ Permite qualquer pessoa logar
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
@@ -64,3 +65,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             }, status=status.HTTP_200_OK)
         return response
 
+# 🔹 Exemplo de View Protegida (Somente usuários autenticados)
+class ProtectedView(APIView):
+    permission_classes = [IsAuthenticated]  # 🔒 Somente usuários autenticados
+
+    def get(self, request):
+        return Response({"message": "Você está autenticado!"}, status=status.HTTP_200_OK)

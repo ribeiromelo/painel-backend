@@ -115,7 +115,13 @@ AUTH_USER_MODEL = 'autenticacao.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # 🔒 Autenticação JWT obrigatória
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # 🔒 Somente usuários autenticados podem acessar
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',  # 🔒 Remove a interface visual do DRF
     ),
 }
 
